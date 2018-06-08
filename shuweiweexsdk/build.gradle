@@ -1,0 +1,53 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 27
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.alibaba:arouter-compiler:1.1.4'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.1'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.android.support:design:27.1.1'
+    api 'com.alibaba:fastjson:1.2.36'
+    api 'com.taobao.android:weex_sdk:0.18.0@aar'
+    api 'com.taobao.android:weex_inspector:0.13.4'
+    api 'com.taobao.android.weex_inspection:urlconnection_interceptor:1.0.0'
+    api 'com.taobao.android.weex_inspection:protocol:1.1.4.1'
+    api 'com.taobao.android:weex_analyzer:0.1.0.5'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.github.ALguojian:AlDialog:8.0'
+    implementation 'com.github.ALguojian:ImageGesture:3.1.0'
+    implementation 'com.squareup.okhttp:okhttp-ws:2.3.0'
+    implementation files('libs/tbs_sdk_thirdapp_v3.6.0.1234_43608_sharewithdownload_withoutGame_obfs_20180510_111111.jar')
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    api'com.jaeger.statusbarutil:library:1.5.1'
+}
