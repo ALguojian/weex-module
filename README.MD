@@ -101,7 +101,7 @@ public class RichText extends WXComponent<TextView> {
 
 ```
 
-### 5. 目前扩展的组建有：
+### 5. 目前扩展的组件有：
 
 Module:
 
