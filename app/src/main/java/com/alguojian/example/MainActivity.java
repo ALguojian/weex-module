@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.shuwei.weex.ui.WeexPagerActivity;
+import com.shuwei.weex.ui.WeexPagerFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -13,5 +14,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         WeexPagerActivity.start(this,"home/home.js");
+
+        WeexPagerFragment.newInstance("home/home.js");
     }
 }

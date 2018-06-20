@@ -28,17 +28,15 @@ public class BaseApplication extends Application {
 
 ```
 
-### 2. 跳转到weex页面
+### 2. 添加weex页面
 
 ```
- /**
-     * 跳转到weex页面
-     *
-     * @param context 上下文
-     * @param url     页面url
-     */
+
+    // 跳转到weex--activity
     WeexPagerActivity.start(this,"home/home.js");
 
+    //添加weex--fragment
+    WeexPagerFragment.newInstance("home/home.js");
 ```
 
 ### 3. 添加module例如下
