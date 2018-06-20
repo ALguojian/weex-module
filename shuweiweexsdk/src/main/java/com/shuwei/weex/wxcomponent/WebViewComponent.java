@@ -56,21 +56,30 @@ public class WebViewComponent extends WXComponent {
         switch (key) {
             case Constants.Name.SHOW_LOADING:
                 Boolean result = WXUtils.getBoolean(param, null);
-                if (result != null)
+                if (result != null) {
                     setShowLoading(result);
+                }
                 return true;
             case Constants.Name.SRC:
                 String src = WXUtils.getString(param, null);
-                if (src != null)
+                if (src != null) {
                     setUrl(src);
+                }
                 return true;
+            default:
+                break;
         }
         return super.setProperty(key, param);
     }
 
     @Override
     protected View initComponentHostView(@NonNull Context context) {
-        mWebView.setOnErrorListener(this::fireEvent);
+        mWebView.setOnErrorListener(new IWebView.OnErrorListener() {
+            @Override
+            public void onError(String type, Object message) {
+                fireEvent(type,message);
+            }
+        });
         mWebView.setOnPageListener(new IWebView.OnPageListener() {
             @Override
             public void onReceivedTitle(String title) {
@@ -110,15 +119,6 @@ public class WebViewComponent extends WXComponent {
         getWebView().destroy();
     }
 
-    private void fireEvent(String type, Object message) {
-        if (getDomObject().getEvents().contains(Constants.Event.ERROR)) {
-            Map<String, Object> params = new HashMap<>();
-            params.put("type", type);
-            params.put("errorMsg", message);
-            fireEvent(Constants.Event.ERROR, params);
-        }
-    }
-
     @WXComponentProp(name = Constants.Name.SHOW_LOADING)
     public void setShowLoading(boolean showLoading) {
         getWebView().setShowLoading(showLoading);
@@ -140,6 +140,15 @@ public class WebViewComponent extends WXComponent {
 
     private void loadUrl(String url) {
         getWebView().loadUrl(url);
+    }
+
+    private void fireEvent(String type, Object message) {
+        if (getDomObject().getEvents().contains(Constants.Event.ERROR)) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("type", type);
+            params.put("errorMsg", message);
+            fireEvent(Constants.Event.ERROR, params);
+        }
     }
 
     public void setAction(String action) {

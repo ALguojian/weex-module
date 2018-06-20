@@ -1,5 +1,6 @@
 package com.shuwei.weex.wxview;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -79,29 +80,33 @@ public class XdWxWebView implements IWebView {
 
     @Override
     public void loadUrl(String url) {
-        if (getWebView() == null)
+        if (getWebView() == null) {
             return;
+        }
         getWebView().loadUrl(url);
     }
 
     @Override
     public void reload() {
-        if (getWebView() == null)
+        if (getWebView() == null) {
             return;
+        }
         getWebView().reload();
     }
 
     @Override
     public void goBack() {
-        if (getWebView() == null)
+        if (getWebView() == null) {
             return;
+        }
         getWebView().goBack();
     }
 
     @Override
     public void goForward() {
-        if (getWebView() == null)
+        if (getWebView() == null) {
             return;
+        }
         getWebView().goForward();
     }
 
@@ -125,6 +130,7 @@ public class XdWxWebView implements IWebView {
         return mWebView;
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void initWebView(WebView wv) {
         WebSettings settings = wv.getSettings();
 

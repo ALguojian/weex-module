@@ -28,94 +28,96 @@ public class WxImageAdapter implements IWXImgLoaderAdapter {
     @Override
     public void setImage(final String url, final ImageView view, WXImageQuality quality, final WXImageStrategy strategy) {
 
-        Runnable runnable = () -> {
-            if (view.getLayoutParams() == null) {
-                return;
-            }
-
-            if (TextUtils.isEmpty(url)) {
-                view.setImageBitmap(null);
-                return;
-            }
-
-            if (view.getLayoutParams().width <= 0 || view.getLayoutParams().height <= 0) {
-                return;
-            }
-
-            if (!TextUtils.isEmpty(strategy.placeHolder)) {
-                Picasso.Builder builder = new Picasso.Builder(WXEnvironment.getApplication());
-                Picasso picasso = builder.build();
-                picasso.load(Uri.parse(strategy.placeHolder)).into(view);
-
-                view.setTag(strategy.placeHolder.hashCode(), picasso);
-            }
-
-            if (url.startsWith(CUSTOM_LOCAL_DRAWABLE)) {
-                String imageName = url.replace(CUSTOM_LOCAL_DRAWABLE, "")
-                        .replaceAll("-", "_")
-                        .replaceAll(" ", "_")
-                        .toLowerCase();
-
-                int imageResourceId = getImageResourceId(view.getContext(), imageName);
-
-                try {
-                    Picasso.with(WXEnvironment.getApplication())
-                            .load(imageResourceId)
-                            .into(view, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    if (strategy.getImageListener() != null) {
-                                        strategy.getImageListener().onImageFinish(url, view, true, null);
-                                    }
-
-                                    if (!TextUtils.isEmpty(strategy.placeHolder)) {
-                                        ((Picasso) view.getTag(strategy.placeHolder.hashCode())).cancelRequest(view);
-                                    }
-                                }
-
-                                @Override
-                                public void onError() {
-                                    if (strategy.getImageListener() != null) {
-                                        strategy.getImageListener().onImageFinish(url, view, false, null);
-                                    }
-                                }
-                            });
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (view.getLayoutParams() == null) {
+                    return;
                 }
-            } else {
 
-                try {
-                    Picasso.with(WXEnvironment.getApplication())
-                            .load(url)
-                            .into(view, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    if (strategy.getImageListener() != null) {
-                                        strategy.getImageListener().onImageFinish(url, view, true, null);
+                if (TextUtils.isEmpty(url)) {
+                    view.setImageBitmap(null);
+                    return;
+                }
+
+                if (view.getLayoutParams().width <= 0 || view.getLayoutParams().height <= 0) {
+                    return;
+                }
+
+                if (!TextUtils.isEmpty(strategy.placeHolder)) {
+                    Picasso.Builder builder = new Picasso.Builder(WXEnvironment.getApplication());
+                    Picasso picasso = builder.build();
+                    picasso.load(Uri.parse(strategy.placeHolder)).into(view);
+
+                    view.setTag(strategy.placeHolder.hashCode(), picasso);
+                }
+
+                if (url.startsWith(CUSTOM_LOCAL_DRAWABLE)) {
+                    String imageName = url.replace(CUSTOM_LOCAL_DRAWABLE, "")
+                            .replaceAll("-", "_")
+                            .replaceAll(" ", "_")
+                            .toLowerCase();
+
+                    int imageResourceId = getImageResourceId(view.getContext(), imageName);
+
+                    try {
+                        Picasso.with(WXEnvironment.getApplication())
+                                .load(imageResourceId)
+                                .into(view, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        if (strategy.getImageListener() != null) {
+                                            strategy.getImageListener().onImageFinish(url, view, true, null);
+                                        }
+
+                                        if (!TextUtils.isEmpty(strategy.placeHolder)) {
+                                            ((Picasso) view.getTag(strategy.placeHolder.hashCode())).cancelRequest(view);
+                                        }
                                     }
 
-                                    if (!TextUtils.isEmpty(strategy.placeHolder)) {
-                                        ((Picasso) view.getTag(strategy.placeHolder.hashCode())).cancelRequest(view);
+                                    @Override
+                                    public void onError() {
+                                        if (strategy.getImageListener() != null) {
+                                            strategy.getImageListener().onImageFinish(url, view, false, null);
+                                        }
                                     }
-                                }
+                                });
 
-                                @Override
-                                public void onError() {
-                                    if (strategy.getImageListener() != null) {
-                                        strategy.getImageListener().onImageFinish(url, view, false, null);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+
+                    try {
+                        Picasso.with(WXEnvironment.getApplication())
+                                .load(url)
+                                .into(view, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        if (strategy.getImageListener() != null) {
+                                            strategy.getImageListener().onImageFinish(url, view, true, null);
+                                        }
+
+                                        if (!TextUtils.isEmpty(strategy.placeHolder)) {
+                                            ((Picasso) view.getTag(strategy.placeHolder.hashCode())).cancelRequest(view);
+                                        }
                                     }
-                                }
-                            });
-                } catch (Exception e) {
 
+                                    @Override
+                                    public void onError() {
+                                        if (strategy.getImageListener() != null) {
+                                            strategy.getImageListener().onImageFinish(url, view, false, null);
+                                        }
+                                    }
+                                });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         };
 
         if (Thread.currentThread() == Looper.getMainLooper().getThread()) {
-
             runnable.run();
         } else {
             WXSDKManager.getInstance().postOnUiThread(runnable, 0);

@@ -1,10 +1,9 @@
-package com.shuwei.weex.activity;
+package com.shuwei.weex.ui;
 
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -26,9 +25,9 @@ public class BaseWeexActivity extends AppCompatActivity {
     private WeakReference<Activity> activityWeakReference;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
-        activityWeakReference = new WeakReference<>(this);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        activityWeakReference = new WeakReference<Activity>(this);
         AppManager.getAppManager().addActivity(activityWeakReference);
         StatusBarUtil.setLightMode(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT != Build.VERSION_CODES.LOLLIPOP) {

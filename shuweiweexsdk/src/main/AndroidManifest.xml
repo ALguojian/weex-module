@@ -4,7 +4,7 @@
 
     <application
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".activity.WeexPagerActivity"></activity>
+        <activity android:name=".ui.WeexPagerActivity"></activity>
     </application>
 
 </manifest>

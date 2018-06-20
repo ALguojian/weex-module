@@ -1,10 +1,9 @@
-package com.shuwei.weex.activity;
+package com.shuwei.weex.ui;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
@@ -14,7 +13,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.shuwei.weex.R;
 import com.shuwei.weex.weeutils.AppManager;
 import com.shuwei.weex.weeutils.BaseIActivityNavBarSetter;
 import com.shuwei.weex.weeutils.WXAnalyzerDelegate;
@@ -29,59 +27,48 @@ import com.taobao.weex.utils.WXFileUtils;
 
 import java.util.HashMap;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * 使用weex加载的activity
+ * 用于管理weex页面
  *
  * @author alguojian
- * @date 2018.06.08
+ * @date 2018/6/20
  */
-public class WeexPagerActivity extends BaseWeexActivity implements IWXRenderListener, WXSDKInstance.NestedInstanceInterceptor {
+public class WeexPagerViewModule implements IWXRenderListener, WXSDKInstance.NestedInstanceInterceptor {
 
-    public static final String BUNDLE_URL = "bundleUrl";
-    public static final String TTAG = "asdfghjkl";
+    private static final String TTAG = "asdfghjkl";
     private static final String EXCEPTION_FILE_NOT_FOUND = "-200001";
-    private static final String SUCCESS = "success";
-    private static final String FAIL = "fail";
-    private FrameLayout flContent;
-    private LinearLayout errorView;
-    private RelativeLayout loading;
-    private String bundleUrl = null;
     private WXSDKInstance wxSdkInstance;
     private WXAnalyzerDelegate mWxAnalyzerDelegate;
     private HashMap<String, Object> mConfigMap = new HashMap<>();
     private Uri uri = null;
     private boolean onRenderSuccess;
+    private String bundleUrl = null;
+    private Context mContext;
+    private FrameLayout flContent;
+    private LinearLayout errorView;
+    private RelativeLayout loading;
 
-    /**
-     * 跳转到weex页面
-     *
-     * @param context 上下文
-     * @param url     页面url
-     */
-    public static void start(@NonNull Context context, @NonNull String url) {
-        Intent starter = new Intent(context, WeexPagerActivity.class);
-        starter.putExtra(BUNDLE_URL, url);
-        context.startActivity(starter);
+    WeexPagerViewModule(@NonNull Context context) {
+        this.mContext = context;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_weex_pager);
-        flContent = findViewById(R.id.flContent);
-        errorView = findViewById(R.id.errorView);
-        loading = findViewById(R.id.loading);
-        bundleUrl = getIntent().getStringExtra(BUNDLE_URL);
-        errorView.setVerticalGravity(View.GONE);
-        errorView.setOnClickListener(v -> {
-            errorView.setVerticalGravity(View.GONE);
-            initData();
-        });
-        initInternalWXData();
+    public WeexPagerViewModule setUrl(String url) {
+        this.bundleUrl = url;
+        return this;
+    }
+
+    public WeexPagerViewModule setView(FrameLayout flContent, LinearLayout errorView, RelativeLayout loading) {
+        this.flContent = flContent;
+        this.errorView = errorView;
+        this.loading = loading;
+        return this;
     }
 
 
@@ -97,26 +84,11 @@ public class WeexPagerActivity extends BaseWeexActivity implements IWXRenderList
     }
 
     /**
-     * 获得weex加载路径
-     */
-    private void initInternalWXData() {
-
-        WXSDKEngine.setActivityNavBarSetter(new BaseIActivityNavBarSetter());
-        mConfigMap.put("bundleUrl", bundleUrl);
-        uri = Uri.parse(bundleUrl);
-        String url = mConfigMap.get("bundleUrl") + "";
-        if (url.contains("?")) {
-            url = url.substring(0, url.indexOf("?"));
-        }
-        WeexActivityManager.instance().putWeexActivity(url, AppManager.getAppManager().getStackIndex(getActivityWeakReference()));
-    }
-
-    /**
      * 开始加载js
      */
     private void renderJs() {
         if (null == uri) {
-            finish();
+            ((Activity) mContext).finish();
             return;
         }
         loading.setVisibility(View.GONE);
@@ -137,7 +109,7 @@ public class WeexPagerActivity extends BaseWeexActivity implements IWXRenderList
     /**
      * 解绑weex
      */
-    private void destroyWXSdkInstance() {
+    public void destroyWXSdkInstance() {
         if (wxSdkInstance != null) {
             wxSdkInstance.destroy();
             wxSdkInstance = null;
@@ -152,8 +124,8 @@ public class WeexPagerActivity extends BaseWeexActivity implements IWXRenderList
      * 初始化Weex
      */
     private void initWXData(String url) {
-        RenderContainer renderContainer = new RenderContainer(this);
-        wxSdkInstance = new WXSDKInstance(this);
+        RenderContainer renderContainer = new RenderContainer(mContext);
+        wxSdkInstance = new WXSDKInstance(mContext);
         wxSdkInstance.setRenderContainer(renderContainer);
         wxSdkInstance.registerRenderListener(this);
         wxSdkInstance.setNestedInstanceInterceptor(this);
@@ -180,22 +152,29 @@ public class WeexPagerActivity extends BaseWeexActivity implements IWXRenderList
 
         mConfigMap.put("bundleUrl", uri.toString());
         final String path = assembleFilePath(uri);
-        io.reactivex.Observable.create((ObservableOnSubscribe<String>)
-                emitter -> emitter.onNext(WXFileUtils.loadFileOrAsset(path, WeexPagerActivity.this))).subscribeOn(Schedulers.io())
+        Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+                emitter.onNext(WXFileUtils.loadFileOrAsset(path, mContext));
+            }
+        }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> {
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) {
 
-                    if (TextUtils.isEmpty(s)) {
-                        onException(wxSdkInstance, EXCEPTION_FILE_NOT_FOUND, "local file not found !");
-                        return;
+                        if (TextUtils.isEmpty(s)) {
+                            onException(wxSdkInstance, EXCEPTION_FILE_NOT_FOUND, "local file not found !");
+                            return;
+                        }
+                        wxSdkInstance.render(TTAG, s, mConfigMap, null, WXRenderStrategy.APPEND_ASYNC);
+                        createActivity();
                     }
-                    wxSdkInstance.render(TTAG, s, mConfigMap, null, WXRenderStrategy.APPEND_ASYNC);
-                    createActivity();
                 });
     }
 
     private void createActivity() {
-        mWxAnalyzerDelegate = new WXAnalyzerDelegate(this);
+        mWxAnalyzerDelegate = new WXAnalyzerDelegate(mContext);
         mWxAnalyzerDelegate.onCreate();
 
         if (wxSdkInstance != null) {
@@ -221,15 +200,21 @@ public class WeexPagerActivity extends BaseWeexActivity implements IWXRenderList
         return path;
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        destroyWXSdkInstance();
+    /**
+     * 获得weex加载路径
+     */
+    public void initInternalWXData() {
+
+        WXSDKEngine.setActivityNavBarSetter(new BaseIActivityNavBarSetter());
+        mConfigMap.put("bundleUrl", bundleUrl);
+        uri = Uri.parse(bundleUrl);
+        String url = mConfigMap.get("bundleUrl") + "";
+        if (url.contains("?")) {
+            url = url.substring(0, url.indexOf("?"));
+        }
+        WeexActivityManager.instance().putWeexActivity(url, AppManager.getAppManager().getStackIndex((((BaseWeexActivity) mContext).getActivityWeakReference())));
     }
 
-    /**
-     * 添加页面
-     */
     @Override
     public void onViewCreated(WXSDKInstance instance, View view) {
 
@@ -276,4 +261,6 @@ public class WeexPagerActivity extends BaseWeexActivity implements IWXRenderList
     public void onCreateNestInstance(WXSDKInstance instance, NestedContainer container) {
 
     }
+
+
 }

@@ -39,26 +39,33 @@ public class WxOkHttpAdapter implements IWXHttpAdapter {
             listener.onHttpStart();
         }
 
-        RequestListener requestListener = (consumed, total, done) -> {
-
-            if (Assert.checkNull(listener)) {
-                listener.onHttpUploadProgress((int) (consumed));
+        RequestListener requestListener = new RequestListener() {
+            @Override
+            public void onRequest(long consumed, long total, boolean done) {
+                if (Assert.checkNull(listener)) {
+                    listener.onHttpUploadProgress((int) (consumed));
+                }
             }
         };
 
-        final ResponseListener responseListener = (consumed, total, done) -> {
-            if (Assert.checkNull(listener)) {
-                listener.onHttpResponseProgress((int) (consumed));
+        final ResponseListener responseListener =new ResponseListener() {
+            @Override
+            public void onResponse(long consumed, long total, boolean done) {
+                if (Assert.checkNull(listener)) {
+                    listener.onHttpResponseProgress((int) (consumed));
+                }
             }
-
         };
 
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(chain -> {
-                    Response originalResponse = chain.proceed(chain.request());
-                    return originalResponse.newBuilder()
-                            .body(new IncrementalResponseBody(originalResponse.body(), responseListener))
-                            .build();
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public Response intercept(Chain chain) throws IOException {
+                        Response originalResponse = chain.proceed(chain.request());
+                        return originalResponse.newBuilder()
+                                .body(new IncrementalResponseBody(originalResponse.body(), responseListener))
+                                .build();
+                    }
                 }).build();
 
         Request okHttpRequest;
@@ -70,7 +77,7 @@ public class WxOkHttpAdapter implements IWXHttpAdapter {
                     .get()
                     .build();
 
-        }else if (METHOD_PUT.equalsIgnoreCase(request.method)){
+        } else if (METHOD_PUT.equalsIgnoreCase(request.method)) {
             okHttpRequest = new Request.Builder()
                     .headers(addHeaders(request))
                     .url(request.url)
