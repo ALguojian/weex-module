@@ -32,6 +32,7 @@ public class WxOkHttpAdapter implements IWXHttpAdapter {
     private static final String METHOD_GET = "GET";
     private static final String METHOD_POST = "POST";
     private static final String METHOD_PUT = "PUT";
+    private static final String METHOD_DELETE = "DELETE";
 
     @Override
     public void sendRequest(final WXRequest request, final OnHttpListener listener) {
@@ -89,6 +90,13 @@ public class WxOkHttpAdapter implements IWXHttpAdapter {
                     .headers(addHeaders(request))
                     .url(request.url)
                     .post(new IncrementaRequestBody(RequestBody.create(MediaType.parse(request.body), request.body), requestListener))
+                    .build();
+
+        } else if (METHOD_DELETE.equalsIgnoreCase(request.method)) {
+            okHttpRequest = new Request.Builder()
+                    .headers(addHeaders(request))
+                    .url(request.url)
+                    .delete()
                     .build();
 
         } else if (!TextUtils.isEmpty(request.method)) {

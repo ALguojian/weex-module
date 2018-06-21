@@ -32,7 +32,7 @@ public class BaseApplication extends Application {
 
 ```
 
-    // 跳转到weex--activity
+    //跳转到weex--activity
     WeexPagerActivity.start(this,"home/home.js");
 
     //添加weex--fragment
