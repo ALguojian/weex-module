@@ -1,0 +1,38 @@
+apply plugin: 'maven'
+
+def libVersion = '1.0.0'
+
+uploadArchives {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('nexus.properties').newDataInputStream())
+
+    repositories {
+        mavenDeployer {
+            repository(url: properties.getProperty("nexus_url")) {
+                authentication(
+                        userName: properties.getProperty("username"),
+                        password: properties.getProperty("password")
+                )
+            }
+
+            pom.project {
+                version libVersion
+                artifactId 'weex'
+                groupId 'com.shuwtech.lib'
+                packaging 'aar'
+                developers 'ALguojian, bytecho'
+                description 'lib of weex module'
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+artifacts {
+    archives sourcesJar
+}
+
