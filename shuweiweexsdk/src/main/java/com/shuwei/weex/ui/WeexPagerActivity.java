@@ -21,7 +21,7 @@ public class WeexPagerActivity extends BaseWeexActivity {
 
     public static final String BUNDLE_URL = "bundleUrl";
 
-    private WeexPagerViewModule mWeexPagerViewModule;
+    protected WeexPagerViewModule mWeexPagerViewModule;
 
     /**
      * 跳转到weex页面
@@ -46,14 +46,12 @@ public class WeexPagerActivity extends BaseWeexActivity {
         mWeexPagerViewModule = new WeexPagerViewModule(this);
         mWeexPagerViewModule.setView(flContent, errorView, loading).setUrl(getIntent().getStringExtra(BUNDLE_URL));
 
-        errorView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                errorView.setVerticalGravity(View.GONE);
-                mWeexPagerViewModule.initData();
-            }
+        errorView.setOnClickListener(v -> {
+            errorView.setVerticalGravity(View.GONE);
+            mWeexPagerViewModule.initData();
         });
         mWeexPagerViewModule.initInternalWXData();
+        mWeexPagerViewModule.initData();
     }
 
 

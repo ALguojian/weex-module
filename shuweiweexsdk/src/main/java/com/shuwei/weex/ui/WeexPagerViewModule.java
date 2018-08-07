@@ -55,7 +55,7 @@ public class WeexPagerViewModule implements IWXRenderListener, WXSDKInstance.Nes
     private LinearLayout errorView;
     private RelativeLayout loading;
 
-    WeexPagerViewModule(@NonNull Context context) {
+    public WeexPagerViewModule(@NonNull Context context) {
         this.mContext = context;
     }
 
