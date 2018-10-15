@@ -56,6 +56,30 @@ public class WeexPagerActivity extends BaseWeexActivity {
 
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (mWeexPagerViewModule.getWxSdkInstance() != null) {
+            mWeexPagerViewModule.getWxSdkInstance().onActivityResume();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mWeexPagerViewModule.getWxSdkInstance() != null) {
+            mWeexPagerViewModule.getWxSdkInstance().onActivityPause();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (mWeexPagerViewModule.getWxSdkInstance() != null) {
+            mWeexPagerViewModule.getWxSdkInstance().onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         mWeexPagerViewModule.destroyWXSdkInstance();

@@ -13,10 +13,10 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.shuwei.weex.weeutils.AppManager;
-import com.shuwei.weex.weeutils.BaseIActivityNavBarSetter;
-import com.shuwei.weex.weeutils.WXAnalyzerDelegate;
-import com.shuwei.weex.weeutils.WeexActivityManager;
+import com.shuwei.weex.weexutils.AppManager;
+import com.shuwei.weex.weexutils.BaseIActivityNavBarSetter;
+import com.shuwei.weex.weexutils.WXAnalyzerDelegate;
+import com.shuwei.weex.weexutils.WeexActivityManager;
 import com.taobao.weex.IWXRenderListener;
 import com.taobao.weex.RenderContainer;
 import com.taobao.weex.WXSDKEngine;
@@ -71,6 +71,10 @@ public class WeexPagerViewModule implements IWXRenderListener, WXSDKInstance.Nes
         return this;
     }
 
+
+    public WXSDKInstance getWxSdkInstance() {
+        return wxSdkInstance;
+    }
 
     /**
      * 加载js过程try-catch--防止加载闪退情况发生
@@ -262,5 +266,7 @@ public class WeexPagerViewModule implements IWXRenderListener, WXSDKInstance.Nes
 
     }
 
-
+    public Uri getUri() {
+        return uri;
+    }
 }

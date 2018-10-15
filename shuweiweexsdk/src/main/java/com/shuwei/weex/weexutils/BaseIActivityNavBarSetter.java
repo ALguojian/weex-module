@@ -1,4 +1,4 @@
-package com.shuwei.weex.weeutils;
+package com.shuwei.weex.weexutils;
 
 import com.taobao.weex.appfram.navigator.IActivityNavBarSetter;
 

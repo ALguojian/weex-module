@@ -11,7 +11,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.jaeger.library.StatusBarUtil;
-import com.shuwei.weex.weeutils.AppManager;
+import com.shuwei.weex.weexutils.AppManager;
 
 import java.lang.ref.WeakReference;
 

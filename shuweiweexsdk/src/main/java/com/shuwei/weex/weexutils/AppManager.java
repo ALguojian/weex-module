@@ -1,4 +1,4 @@
-package com.shuwei.weex.weeutils;
+package com.shuwei.weex.weexutils;
 
 import android.app.Activity;
 

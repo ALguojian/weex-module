@@ -48,7 +48,6 @@ public class WebViewComponent extends WXComponent {
 
     protected void createWebView() {
         mWebView = new XdWxWebView(getContext());
-
     }
 
     @Override
@@ -74,12 +73,7 @@ public class WebViewComponent extends WXComponent {
 
     @Override
     protected View initComponentHostView(@NonNull Context context) {
-        mWebView.setOnErrorListener(new IWebView.OnErrorListener() {
-            @Override
-            public void onError(String type, Object message) {
-                fireEvent(type,message);
-            }
-        });
+        mWebView.setOnErrorListener((type, message) -> fireEvent(type, message));
         mWebView.setOnPageListener(new IWebView.OnPageListener() {
             @Override
             public void onReceivedTitle(String title) {

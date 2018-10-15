@@ -48,7 +48,6 @@ public class WxImageAdapter implements IWXImgLoaderAdapter {
                     Picasso.Builder builder = new Picasso.Builder(WXEnvironment.getApplication());
                     Picasso picasso = builder.build();
                     picasso.load(Uri.parse(strategy.placeHolder)).into(view);
-
                     view.setTag(strategy.placeHolder.hashCode(), picasso);
                 }
 

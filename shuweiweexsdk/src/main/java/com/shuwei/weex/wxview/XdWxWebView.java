@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
@@ -41,6 +42,18 @@ public class XdWxWebView implements IWebView {
 
     public XdWxWebView(Context context) {
         mContext = context;
+        com.tencent.smtt.sdk.CookieSyncManager.createInstance(context);
+        com.tencent.smtt.sdk.CookieManager cm = com.tencent.smtt.sdk.CookieManager.getInstance();
+        cm.setAcceptCookie(true);
+        cm.setCookie("https://devsalon.meiyezhushou.com", "ak=android");
+        cm.setCookie("https://salon.meiyezhushou.com", "ak=android");
+        cm.setCookie("http://devsheji.yanzijia.cn", "ak=android");
+        cm.setCookie("https://sheji.meiyezhushou.com", "ak=android");
+        if (Build.VERSION.SDK_INT < 21) {
+            com.tencent.smtt.sdk.CookieSyncManager.getInstance().sync();
+        } else {
+            com.tencent.smtt.sdk. CookieManager.getInstance().flush();
+        }
     }
 
     @Override

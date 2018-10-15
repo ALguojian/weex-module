@@ -5,6 +5,18 @@
     <application>
         <activity
             android:name=".ui.WeexPagerActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter>
+                <action android:name="com.shuwtech.weex.pager"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.EditHostActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
     </application>
 

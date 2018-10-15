@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.shuwei.weex.weexutils.DebugUtils;
 import com.shuwei.weex.wxadapter.JsExceptionAdapter;
 import com.shuwei.weex.wxadapter.WxImageAdapter;
 import com.shuwei.weex.wxadapter.httpadapter.WxOkHttpAdapter;
@@ -50,11 +51,11 @@ public class WeexModule {
         try {
 
             InitConfig build = new InitConfig.Builder()
-                    .setImgAdapter(new WxImageAdapter())
-                    .setJSExceptionAdapter(new JsExceptionAdapter())
-                    .setHttpAdapter(new WxOkHttpAdapter())
-                    .setWebSocketAdapterFactory(new DefaultWebSocketAdapterFactory())
-                    .build();
+                .setImgAdapter(new WxImageAdapter())
+                .setJSExceptionAdapter(new JsExceptionAdapter())
+                .setHttpAdapter(new WxOkHttpAdapter())
+                .setWebSocketAdapterFactory(new DefaultWebSocketAdapterFactory())
+                .build();
             WXSDKEngine.initialize((Application) context, build);
 
             WXEnvironment.setOpenDebugLog(flag);
@@ -70,4 +71,10 @@ public class WeexModule {
         }
     }
 
+    public static void enableRemoteDebug(Context context) {
+        WXEnvironment.sDebugServerConnectable = true;
+        WXEnvironment.sRemoteDebugMode = false;
+        WXEnvironment.sRemoteDebugProxyUrl = "ws://" + DebugUtils.getDebugServer(context) + "/debugProxy/native";
+        WXSDKEngine.reload();
+    }
 }
