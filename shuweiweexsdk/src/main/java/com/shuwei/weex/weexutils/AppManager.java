@@ -40,6 +40,22 @@ public class AppManager {
     }
 
     /**
+     * 获得站内第二个zctivity
+     *
+     * @return
+     */
+    public String getSecondActivity() {
+
+        String className = null;
+        if (activityStack != null && activityStack.size() >= 2) {
+            WeakReference<Activity> activityWeakReference = activityStack.get(activityStack.size() - 2);
+            className = activityWeakReference.get().getClass().getSimpleName();
+        }
+        return className;
+    }
+
+
+    /**
      * 获取当前Activity（堆栈中最后一个压入的）
      */
     public Activity currentActivity() {

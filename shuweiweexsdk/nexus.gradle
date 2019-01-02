@@ -1,6 +1,6 @@
 apply plugin: 'maven'
 
-def libVersion = '1.0.13'
+def libVersion = '1.0.14'
 
 uploadArchives {
     Properties properties = new Properties()
